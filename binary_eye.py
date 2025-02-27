@@ -47,4 +47,7 @@ ax4.grid()
 ax4.set_title('Diagrama de olho de cosseno levantado')
 
 
-plt.savefig('images/binary_eyediagram.png')
+fig1.savefig('images/binary_eyediagram_RZ.png')
+fig2.savefig('images/binary_eyediagram_NRZ.png')
+fig3.savefig('images/binary_eyediagram_senoide.png')
+fig4.savefig('images/binary_eyediagram_cosseno.png')
