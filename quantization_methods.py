@@ -55,11 +55,12 @@ def uniquan(sig_in, L):
 
     # define os níveis de quantização
     q_level = np.arange(sig_nmax + Delta/2, sig_pmax, Delta)
-    L_sig = len(sig_in) # comprimento do sinal
-    sigp = (sig_in-sig_nmax)/Delta + 1/2 # mapeamento do sinal para o intervalo [0, L]
+    #L_sig = len(sig_in) # comprimento do sinal
+    sigp = (sig_in-sig_nmax)/Delta + 1/2 # mapeamento do sinal para o intervalo [1/2, L+1/2]
     qindex = np.round(sigp).astype(int) # índices dos níveis de quantização
-    qindex[qindex > L] = L # limita o índice ao número de níveis
-    q_out = q_level[qindex-1] # sinal quantizado
+    qindex = qindex-1 # ajusta o índice para o intervalo [0, L-1]
+    qindex = np.clip(qindex, 0, L-1) # limita o índice ao número de níveis (negativos tornam-se 0)
+    q_out = q_level[qindex] # sinal quantizado
     SQNR = 20*np.log10(np.linalg.norm(sig_in)/np.linalg.norm(sig_in-q_out)) # cálculo do SQNR
 
     return q_out, Delta, SQNR
