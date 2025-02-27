@@ -92,3 +92,29 @@ def sampandquant(sig_in, L, td, ts):
     sq_out[::nfac] = sq_out_ # sinal amostrado e quantizado com zeros
     
     return s_out, sq_out, sqh_out, Delta, SQNR
+
+def deltamod(sig_in, Delta, td, ts):
+    '''
+    sig_in - sinal de entrada
+    Delta - incremento de quantização
+    td - período de amostragem de sinal de sig_in
+    ts - novo período de amostragem
+    Retorna:
+    s_DMOut - saída DM amostrada
+    '''
+
+    nfac = int(ts/td) # fator de subamostragem
+    p_zoh = np.ones(nfac) # pulso de amostragem
+    s_out_ = sig_in[::nfac] # sinal amostrado
+    Num_it = len(s_out_) # número de iterações
+    s_DMout = [-Delta/2] # sinal de saída
+
+    for k in range(1, Num_it):
+        xvar = s_DMout[k-1] # valor anterior
+        signal = np.sign(s_out_[k-1]-xvar) # soma ou subtração de delta
+        s_DMout.append(xvar + Delta*signal) # valor atual
+
+    # upsampling
+    s_DMOut = np.kron(s_DMout, p_zoh) # reconstrução do sinal com zero-order hold
+
+    return s_DMOut
