@@ -54,4 +54,37 @@ plt.tight_layout()
 
 plt.savefig('images/sinal_original_reconstruido_sampleado.png')
 
+# calcula sinal obtido a partir da amostragem ideal e low pass filter ideal
+BW = 10 # largura de banda do filtro passa-baixa 
+# filtro ideal passa-baixa
+H_1pf = np.zeros(int(Lfft))
+H_1pf[int(Lfft/2-BW):int(Lfft/2+BW)-1] = 1
+
+# filtragem
+S_recv = Nfactor * S_out * H_1pf
+s_recv = np.real(np.fft.ifft(np.fft.ifftshift(S_recv))) # sinal reconstruído
+s_recv = s_recv[0:Lsig] # ajusta o comprimento do sinal
+
+# Plota o sinal original e o sinal reconstruído
+figure = plt.figure(figsize=(10, 8))
+plt.subplot(2,1,1)
+plt.plot(Faxis, np.abs(S_recv), 'r', label='Sinal reconstruído')
+plt.title('Espectro de filtragem ideal')
+plt.xlabel('Frequência [Hz]')
+plt.ylabel('Magnitude')
+plt.legend()
+plt.grid()
+
+plt.subplot(2,1,2)
+plt.plot(t, xsig, 'b-.', label='Sinal original')
+plt.plot(t, s_recv, 'r', label='Sinal reconstruído')
+plt.title('Sinal original e sinal reconstruído idealmente')
+plt.xlabel('Tempo [s]')
+plt.ylabel('Amplitude')
+plt.legend()
+plt.grid()
+plt.tight_layout()
+plt.savefig('images/sinal_original_reconstruido_filtrado_ideal.png')
+
+# reconstrução não ideal
 
