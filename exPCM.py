@@ -58,7 +58,7 @@ SQH2 = np.fft.fftshift(SQH2) # transformada de Fourier do sinal PCM
 # usa passa-baixas para filtrar os dois sinais PCM
 BW = 10 # largura de banda do filtro passa-baixa
 H_1pf = np.zeros(int(Lfft))
-H_1pf[int(Lfft/2-BW/2):int(Lfft/2+BW/2)] = 1 # filtro passa-baixa ideal
+H_1pf[int(Lfft/2-BW):int(Lfft/2+BW)] = 1 # filtro passa-baixa ideal
 
 # sinal PCM L=16 filtrado
 S1_recv = SQH1*H_1pf # sinal PCM filtrado
@@ -74,7 +74,7 @@ s_recv2 = s_recv2[:Lsig] # ajusta o comprimento do sinal
 plt.figure(figsize=(10, 8))
 plt.subplot(2,1,1)
 plt.plot(t, xsig, 'b', label='Sinal original')
-plt.plot(t, s_recv1, 'r', label='Sinal PCM filtrado (L=16)')
+plt.plot(t, s_recv1, 'r--', label='Sinal PCM filtrado (L=16)')
 plt.title('Sinal original g_t e correspondente PCM filtrado 16 níveis')
 plt.xlabel('Tempo [s]')
 plt.ylabel('Amplitude')
@@ -83,7 +83,7 @@ plt.grid()
 
 plt.subplot(2,1,2)
 plt.plot(t, xsig, 'b', label='Sinal original')
-plt.plot(t, s_recv2, 'r', label='Sinal PCM filtrado (L=4)')
+plt.plot(t, s_recv2, 'r--', label='Sinal PCM filtrado (L=4)')
 plt.title('Sinal original g_t e correspondente PCM filtrado 4 níveis')
 plt.xlabel('Tempo [s]')
 plt.ylabel('Amplitude')
