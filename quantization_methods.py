@@ -1,6 +1,6 @@
 import numpy as np
 
-def sampandquant(x, nbits, td, ts):
+def old_sampandquant(x, nbits, td, ts):
     # x: sinal de entrada
     # nbits: número de bits do quantizador
     # td: taxa de amostragem do sinal de entrada
@@ -63,3 +63,31 @@ def uniquan(sig_in, L):
     SQNR = 20*np.log10(np.linalg.norm(sig_in)/np.linalg.norm(sig_in-q_out)) # cálculo do SQNR
 
     return q_out, Delta, SQNR
+
+def sampandquant(sig_in, L, td, ts):
+    '''
+    sig_in - sinal de entrada
+    L - número de níveis de quantização
+    td - período de amostragem
+    ts - período de amostragem
+    Retorna:
+    s_out - sinal amostrado
+    sq_out - sinal amostrado e quantizado
+    sqh_out - sinal amostrado e quantizado com zero-order hold
+    Delta - intervalo de quantização
+    SQNR - razão sinal ruído de quantização
+    '''
+
+    nfac = int(ts/td) # fator de subamostragem
+    p_zoh = np.ones(nfac) # pulso de amostragem
+    s_out_ = sig_in[::nfac] # sinal amostrado
+    sq_out_, Delta, SQNR = uniquan(s_out_, L) # sinal amostrado e quantizado
+    sqh_out = np.kron(sq_out_, p_zoh) # reconstrução do sinal com zero-order hold
+    
+    # upsampling
+    s_out = np.zeros(len(sig_in)) # sinal amostrado
+    s_out[::nfac] = s_out_ # sinal amostrado
+    sq_out = np.zeros(len(sig_in)) # sinal amostrado e quantizado com zeros
+    sq_out[::nfac] = sq_out_ # sinal amostrado e quantizado com zeros
+    
+    return s_out, sq_out, sqh_out, Delta, SQNR
