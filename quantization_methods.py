@@ -33,3 +33,33 @@ def sampandquant(x, nbits, td, ts):
     SQNR = 10*np.log10(np.var(x)/np.var(eq)) # cálculo do SQNR para um sinal com média zero
 
     return s_out, sq_out, sqh_out, Delta, SQNR
+
+
+def uniquan(sig_in, L):
+    '''
+    L - número de níveis de quantização uniforme
+    sig_in- vetor para sinal de entrada
+
+    Retorna:
+    q_out -  saída quantizada
+    Delta - intervalo de quantização
+    SQNR - razão sinal ruído de quantização
+    '''
+
+    # Encontra o valor máximo e mínimo do sinal
+    sig_pmax = np.max(sig_in)
+    sig_nmax = np.min(sig_in)
+
+    # Calcula o intervalo de quantização
+    Delta = (sig_pmax - sig_nmax)/L
+
+    # define os níveis de quantização
+    q_level = np.arange(sig_nmax + Delta/2, sig_pmax, Delta)
+    L_sig = len(sig_in) # comprimento do sinal
+    sigp = (sig_in-sig_nmax)/Delta + 1/2 # mapeamento do sinal para o intervalo [0, L]
+    qindex = np.round(sigp).astype(int) # índices dos níveis de quantização
+    qindex[qindex > L] = L # limita o índice ao número de níveis
+    q_out = q_level[qindex-1] # sinal quantizado
+    SQNR = 20*np.log10(np.linalg.norm(sig_in)/np.linalg.norm(sig_in-q_out)) # cálculo do SQNR
+
+    return q_out, Delta, SQNR
