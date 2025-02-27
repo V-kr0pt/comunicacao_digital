@@ -86,5 +86,33 @@ plt.grid()
 plt.tight_layout()
 plt.savefig('images/sinal_original_reconstruido_filtrado_ideal.png')
 
-# reconstrução não ideal
+# subamostragem e retenção de ordem zero
+ZOH = np.ones(int(Nfactor))
+s_ni = np.kron(s_out[::int(Nfactor)], ZOH) # sinal reconstruído com subamostragem e retenção de ordem zero
+S_ni = np.fft.fft(s_ni, int(Lfft)) # transformada de Fourier do sinal reconstruído
+S_ni = np.fft.fftshift(S_ni) # rearranja a transformada de
+S_recv2 = S_ni*H_1pf # sinal reconstruído com subamostragem e retenção de ordem zero e filtragem ideal
+s_recv2 = np.real(np.fft.ifft(np.fft.ifftshift(S_recv2))) # sinal reconstruído
+s_recv2 = s_recv2[0:Lsig] # ajusta o comprimento do sinal
 
+# Plota o sinal original e o sinal reconstruído
+figure = plt.figure(figsize=(10, 8))
+plt.subplot(2,1,1)
+plt.plot(t, xsig, 'b', label='Sinal original')
+plt.plot(t, s_ni, 'r', label='Sinal reconstruído')
+plt.title('Sinal original e sinal reconstruído com pulso retangular')
+plt.xlabel('Tempo [s]')
+plt.ylabel('Amplitude')
+plt.legend()
+plt.grid()
+
+plt.subplot(2,1,2)
+plt.plot(t, xsig, 'b', label='Sinal original')
+plt.plot(t, s_recv2[0:Lsig], 'b--', label='Sinal reconstruído')
+plt.title('Sinal original e sinal reconstruído com pulso retangular após LPF')
+plt.xlabel('Tempo [s]')
+plt.ylabel('Amplitude')
+plt.legend()
+plt.grid()
+plt.tight_layout()
+plt.savefig('images/sinal_original_reconstruido_pulso_retangular.png')
